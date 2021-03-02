@@ -1,0 +1,54 @@
+{
+    string $sel[] =`ls -sl`;
+    string $targetFilePath = "D:\\_PixelfFederation\\Client.DiggysAdventure2\\Assets\\Art\\MJ\\";
+    
+    for($geometry in $sel){
+        float $position = GetMinVertexPosition($geometry);
+        float $pivotPosition[] = GetCurrentPivotPosition($geometry); 
+        SetPivotByPosition($position, $geometry, $pivotPosition);
+        SetGeometryPosition($geometry,{0.0,0.0,0.0}); 
+        ExportFbx($geometry, $targetFilePath);
+        SetGeometryPosition($geometry, $pivotPosition);
+    }
+    print("Export was succesfull!");
+    
+//-------------------------------------------------------- 
+    
+    proc float GetMinVertexPosition(string $obj){
+        select $obj;
+        float $vertexValue[];
+        $cov = `polyEvaluate -v`;
+        for($i = 0; $i < $cov[0]; $i++){
+            float $pos[] = `xform -q -ws -t ($obj + ".vtx["+$i+"]")`;
+            $vertexValue[size($vertexValue)] = $pos[1];     
+        } 
+        $vertexValue = `sort $vertexValue`;
+        print("return: " + $vertexValue[0]+"\n");
+        return $vertexValue[0];
+    }
+    
+    proc SetPivotByPosition(float $position, string $obj, float $pivotPosition[]){
+        xform -ws -pivots $pivotPosition[0] $position $pivotPosition[2] $obj;
+        
+    }
+    
+    proc float[] GetCurrentPivotPosition (string $obj){
+         print("test" + $obj);
+         select $obj;
+        float $pivotPosition[] = `xform -q -ws -scalePivot $obj`;
+        return $pivotPosition;
+    }
+    
+    proc SetGeometryPosition(string $obj, float $position[]){
+        move -rpr $position[0] $position[1] $position[2] $obj;
+        DeleteHistory;
+        FreezeTransformations;
+    }
+    
+    proc ExportFbx(string $obj, string $filePath){
+        select $obj;
+        string $curentFilePath = $filePath + $obj + ".fbx";    
+        FBXExport -f $curentFilePath -s;
+        select -cl  ;
+    }
+}
