@@ -8,7 +8,7 @@
         SetPivotByPosition($position, $geometry, $pivotPosition);
         SetGeometryPosition($geometry,{0.0,0.0,0.0}); 
         ExportFbx($geometry, $targetFilePath);
-        SetGeometryPosition($geometry, $pivotPosition);
+        SetGeometryPosition($geometry, {$pivotPosition[0], 0, $pivotPosition[2]});
     }
     print("Export was succesfull!");
     
