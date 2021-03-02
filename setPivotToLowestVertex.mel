@@ -5,8 +5,7 @@
         float $position = GetMinVertexPosition($geometry);
         float $pivotPosition[] = GetCurrentPivotPosition($geometry); 
         SetPivotByPosition($position, $geometry, $pivotPosition);
-        print(GetCurrentPivotPosition($geometry));
-        
+        SetGeometryPosition($geometry,{0.0,0.0,0.0});     
     }
     
     
@@ -33,5 +32,9 @@
          select $obj;
         float $pivotPosition[] = `xform -q -ws -scalePivot $obj`;
         return $pivotPosition;
+    }
+    
+    proc SetGeometryPosition(string $obj, float $position[]){
+        move -rpr $position[0] $position[1] $position[2] $obj;
     }
 }
