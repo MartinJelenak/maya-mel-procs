@@ -1,0 +1,13 @@
+{
+    int $CountShellAtr[] = `polyEvaluate -uvShell`;
+    int $countShell = (int)$CountShellAtr[0];
+    for($i = 0; $i < $countShell; $i++){
+        string $currentShell[] = `polyEvaluate -uis $i`;
+        select -r $currentShell;
+        texOrientShells;
+        polyNormalizeUV -normalizeType 1 -preserveAspectRatio off -centerOnTile off -normalizeDirection 0 $currentShell;
+        polyEditUV -r false -pu 0 -pv 1 -su 0.246 -sv 0.248 $currentShell;
+//        polyEditUV -r true -u 0 -v -0.25 -su 1 -sv 1 $currentShell;
+        print($i + " / "+ $countShell + "\n");
+    }
+}

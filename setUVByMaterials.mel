@@ -1,0 +1,43 @@
+{
+GetMaterialID();
+proc GetMaterialID (){
+    string $shaderSG[];
+    clear $shaderSG;
+    $shaderSG = stringArrayRemoveDuplicates(ls("-mat",listConnections(listConnections("-type","shadingEngine",`ls -sl -o -dag -s`))));
+
+
+    for($shader in $shaderSG){
+        string $partsOfShaderName[];
+        string $shaderArr = `tokenize $shader "_" $partsOfShaderName`;
+        if($partsOfShaderName[0] == "id"){
+             print($partsOfShaderName[1] + "\n");
+             hyperShade -objects $shader;
+             string $sel[] =`ls -sl`;
+             performPolyAutoProj 0;
+             float $u = coordinatU($partsOfShaderName[1]);
+             float $v = coordinatV($partsOfShaderName[1]);
+             polyEditUV -pu $u -pv $v -su 0 -sv 0 ;
+        }
+    }
+}
+
+
+proc float coordinatV (float $id){
+    float $helper = ($id/32)-0.01;
+    $rounding = trunc ($helper)+1;
+    float $v = ((1.0/32.0) * $rounding) - 0.015625;
+    return $v;
+}
+
+proc float coordinatU (float $id){
+    $roundingOrigin = trunc ($id/32);
+    float $origin = $id - ($roundingOrigin * 32);
+    if($origin == 0){
+        
+        float $u = ((1.0/32.0) * 32) - 0.015625;
+        return $u;
+    }
+    float $u = ((1.0/32.0) * $origin) - 0.015625;
+    return $u;
+}
+}

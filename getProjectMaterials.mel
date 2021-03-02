@@ -1,0 +1,58 @@
+{
+    string $exampleFileName = "C://Users//studi//Documents//"+ "testFromMaya.txt";
+    string $allLines[] = freadAllLines($exampleFileName);
+    string $line;
+    string $buffer[];
+    string $rgbArr[];
+    
+    string $currentMatt[] = `ls -mat`;
+    
+    
+    for($line in $allLines)
+    {
+        int $creatFactor = 1;
+        $numTokens = `tokenize $line "~" $buffer`;
+        if($buffer[1] != "----"){
+    	   
+    	    string $nameAttColor = "id_" + $buffer[0] + "_" + CorrectureNameColor($buffer[1]) + ".color";
+    	    $tokens = `tokenize $buffer[2] " " $rgbArr`;
+
+            float $colorRgbX = (float)$rgbArr[1];
+            float $colorRgbY = (float)$rgbArr[2];
+            float $colorRgbZ = (float)$rgbArr[3];
+            string $shaderName = "id_" + $buffer[0] + "_" + $buffer[1];
+            
+            for($i=0; $i<size($currentMatt); $i++){                
+                if(CorrectureNameColor($shaderName) == $currentMatt[$i]){
+                    print(CorrectureNameColor($shaderName) +" | "+ $currentMatt[$i]+ "\n");
+                    EditMatereial($nameAttColor, $colorRgbX, $colorRgbY, $colorRgbZ);
+                    $creatFactor = 0;
+                    break;
+                }            
+            }
+            if($creatFactor == 1){
+                    CreateMatereial($shaderName, $nameAttColor, $colorRgbX, $colorRgbY, $colorRgbZ);
+            }
+        }
+    }
+    
+    global proc CreateMatereial (string $shaderName, string $nameAttColor, float $colorRgbX, float $colorRgbY, float $colorRgbZ){
+         string $newShader = `shadingNode -asShader lambert -n $shaderName`;
+         setAttr $nameAttColor -type double3 $colorRgbX $colorRgbY $colorRgbZ;
+    }
+    
+    global proc EditMatereial (string $nameAttColor, float $colorRgbX, float $colorRgbY, float $colorRgbZ){
+         setAttr $nameAttColor -type double3 $colorRgbX $colorRgbY $colorRgbZ;
+    }
+      
+      
+    global proc string CorrectureNameColor (string $name){
+        string $prepareString =  substituteAllString( $name, "-", "_");
+        string $nameColor =  substituteAllString( $prepareString, " ", "_");
+        if(endsWith($nameColor, "_") == 1){
+            string $newString = `substring $nameColor 1 (size($nameColor)-1)`;
+            return $newString;
+    	    }
+    return $nameColor;
+    }
+}

@@ -1,0 +1,26 @@
+//{
+
+
+//	fileBrowser( "onSave", "EXPORT FBX", "FBX export", 1 );
+//global proc int onSave(string $filename,string $type) {
+   
+//print($filename+"\n");
+//print($type+"\n");
+
+//FBXExportEmbeddedTextures -v false;
+//FBXExportTriangulate -v false;
+//FBXExportInAscii -v false;
+//FBXExportInputConnections -v false;
+//FBXExportFileVersion FBX201400;		   
+//FBXExport -f ($filename) -s;
+		
+		
+//		return true;	
+//}
+//}
+
+{
+	 string $sel[] =`ls -sl`;
+ string $filename = "D:\\_PixelfFederation\\Client.DiggysAdventure2\\Assets\\Art\\MJ\\" + $sel[0] + ".fbx";
+FBXExport -f $filename -s;
+}

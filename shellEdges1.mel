@@ -1,0 +1,8 @@
+{
+    int $idShell[] = `polyEvaluate -uvShellIds`;
+    string $currentShell[] = `polyEvaluate -uis $idShell[0]`;
+    select -r $currentShell;
+    texOrientShells;
+    polyNormalizeUV -normalizeType 1 -preserveAspectRatio off -centerOnTile off -normalizeDirection 0 $currentShell;
+    polyEditUV -r false -pu 0 -pv 1 -su 0.246 -sv 0.248 $currentShell;
+}
