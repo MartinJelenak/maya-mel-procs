@@ -8,14 +8,25 @@
     proc main(string $currentCollObj){
         select $currentCollObj;
         select -hi;
+        string $selForPivot[] = `ls -sl`;
         select -d $currentCollObj;
         string $objs[] = `ls -sl`;
         string $finalArr[];
+        string $callSel[];
         for($i = 0; $i < size($objs); $i++){
-            if(!ShadowChecker($objs[$i], "_ShadowCaster") || !ShadowChecker($objs[$i], "_ShadowCaster")){
-                $finalArr[size($finalArr)] = $objs[$i]; 
+            $a = stringContentChecker($objs[$i], "_ShadowCaster");
+            $b = stringContentChecker($objs[$i], "Shape");
+
+            if($a || $b){
+                //print("_ShadowCaster or Shape in content \n");
+            }else{
+                $finalArr[size($finalArr)] = $objs[$i];
             }
         }
+        $callSel = $finalArr;
+        $callSel[size($callSel)] =  $currentCollObj;
+        //print($callSel);
+        setUpPivot($callSel, $currentCollObj);
         select -cl  ;
         select $finalArr;
         parent -w;
@@ -24,7 +35,7 @@
         parent -relative $forP $currentCollObj;
     }
     
-    proc int ShadowChecker(string $name, string $findItem){
+    proc int stringContentChecker(string $name, string $findItem){
         string $sCheckerValue = `match $findItem $name`;
         if(size($sCheckerValue) > 0){
         	return 1;
@@ -40,5 +51,54 @@
     proc string createNameFromCollection (string $originName){
         string $name =  stringRemovePrefix( $originName, "_ExportCollection_" );
         return $name;
-    }  
-}    
+    }
+    
+        proc SetPivotByPosition(string $obj, float $pivotPosition[]){
+        print($obj + " " + $pivotPosition[0]+ $pivotPosition[1]+ $pivotPosition[2] + "\n");
+        xform -ws -pivots $pivotPosition[0] $pivotPosition[1] $pivotPosition[2] $obj;
+        
+    }
+    
+    proc float[] GetCurrentPivotPosition (string $obj){
+         //print("test" + $obj);
+         select $obj;
+        float $pivotPosition[] = `xform -q -ws -scalePivot $obj`;
+        //print($pivotPosition);
+        return $pivotPosition;
+    }
+    
+    proc SetGeometryPosition(string $obj, float $position[]){
+        move -rpr $position[0] $position[1] $position[2] $obj;
+        DeleteHistory;
+        FreezeTransformations;
+    }
+
+    proc setUpPivot(string $objs[], string $originParent){
+        float $position[];
+        for($i = 0; $i < size($objs); $i++){
+            if(stringContentChecker($objs[$i], "Pivot")){
+                $position = GetCurrentPivotPosition($objs[$i]);
+            }
+        }
+        for($obj in $objs){
+            FreezeTransformations;
+            SetPivotByPosition($obj, $position);
+        }
+        // SetGeometryPosition($originParent, {0.0,0.0,0.0});
+        // for($obj in $objs){
+        //     FreezeTransformations;
+        // }
+
+    
+    }
+    proc string[] SelectionFilterByStringPart(string $arr[], string $stringPart){
+        string newArr[];
+        for($stringItem in $arr){
+            string $stringCheckerValue = `match $stringPart $stringItem`;
+            if(!size($stringCheckerValue)){
+                $newArr[size($newArr)] = $stringItem;
+            }
+        }
+        return $newArr;
+    }
+}   
