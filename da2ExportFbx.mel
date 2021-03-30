@@ -1,0 +1,44 @@
+{
+    string $targetFilePath = "D:\\_PixelfFederation\\Client.DiggysAdventure2\\Assets\\Art\\MJ\\";
+    string $collectionSel[] = `ls -sl`;
+    for($collObj in $collectionSel){
+        main($collObj);
+    }
+    
+    proc main(string $currentCollObj){
+        select $currentCollObj;
+        select -hi;
+        select -d $currentCollObj;
+        string $objs[] = `ls -sl`;
+        string $finalArr[];
+        for($i = 0; $i < size($objs); $i++){
+            if(!ShadowChecker($objs[$i], "_ShadowCaster") || !ShadowChecker($objs[$i], "_ShadowCaster")){
+                $finalArr[size($finalArr)] = $objs[$i]; 
+            }
+        }
+        select -cl  ;
+        select $finalArr;
+        parent -w;
+        ExportFbx(createNameFromCollection($currentCollObj), $targetFilePath);
+        string $forP[] = `ls -sl`;
+        parent -relative $forP $currentCollObj;
+    }
+    
+    proc int ShadowChecker(string $name, string $findItem){
+        string $sCheckerValue = `match $findItem $name`;
+        if(size($sCheckerValue) > 0){
+        	return 1;
+        }
+        return 0;     
+    }
+    
+    proc ExportFbx(string $obj, string $filePath){
+        string $curentFilePath = $filePath + $obj + ".fbx";    
+        FBXExport -f $curentFilePath -s;
+    }
+    
+    proc string createNameFromCollection (string $originName){
+        string $name =  stringRemovePrefix( $originName, "_ExportCollection_" );
+        return $name;
+    }  
+}    
