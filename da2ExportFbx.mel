@@ -11,21 +11,12 @@
         string $selForPivot[] = `ls -sl`;
         select -d $currentCollObj;
         string $objs[] = `ls -sl`;
-        string $finalArr[];
+        string $finalArr[] = SelectionFilterByStringPart($objs, "_ShadowCaster");
+        $finalArr = SelectionFilterByStringPart($finalArr, "Shape");
         string $callSel[];
-        for($i = 0; $i < size($objs); $i++){
-            $a = stringContentChecker($objs[$i], "_ShadowCaster");
-            $b = stringContentChecker($objs[$i], "Shape");
-
-            if($a || $b){
-                //print("_ShadowCaster or Shape in content \n");
-            }else{
-                $finalArr[size($finalArr)] = $objs[$i];
-            }
-        }
         $callSel = $finalArr;
         $callSel[size($callSel)] =  $currentCollObj;
-        //print($callSel);
+        print(SelectionFilterByStringPart($selForPivot, "Shape"));
         setUpPivot($callSel, $currentCollObj);
         select -cl  ;
         select $finalArr;
@@ -54,16 +45,13 @@
     }
     
         proc SetPivotByPosition(string $obj, float $pivotPosition[]){
-        print($obj + " " + $pivotPosition[0]+ $pivotPosition[1]+ $pivotPosition[2] + "\n");
         xform -ws -pivots $pivotPosition[0] $pivotPosition[1] $pivotPosition[2] $obj;
         
     }
     
     proc float[] GetCurrentPivotPosition (string $obj){
-         //print("test" + $obj);
          select $obj;
         float $pivotPosition[] = `xform -q -ws -scalePivot $obj`;
-        //print($pivotPosition);
         return $pivotPosition;
     }
     
@@ -84,15 +72,15 @@
             FreezeTransformations;
             SetPivotByPosition($obj, $position);
         }
-        // SetGeometryPosition($originParent, {0.0,0.0,0.0});
-        // for($obj in $objs){
-        //     FreezeTransformations;
-        // }
+        SetGeometryPosition($originParent, {0.0,0.0,0.0});
+        for($obj in $objs){
+            FreezeTransformations;
+        }
 
     
     }
     proc string[] SelectionFilterByStringPart(string $arr[], string $stringPart){
-        string newArr[];
+        string $newArr[];
         for($stringItem in $arr){
             string $stringCheckerValue = `match $stringPart $stringItem`;
             if(!size($stringCheckerValue)){
