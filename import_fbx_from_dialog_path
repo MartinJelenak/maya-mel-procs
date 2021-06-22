@@ -1,0 +1,25 @@
+{
+	string $text;
+	
+	// create a prompt dialog to request the users name
+	string $result = `promptDialog 
+		-title "Import FBX from path"
+		-message "Enter path:"
+		-button "Import" -button "Cancel"
+		-defaultButton "OK" -cancelButton "Cancel"
+		-dismissString "Cancel"`;
+ 
+ 	// if OK pressed
+	if ($result == "Import") {
+	
+		// query the entry typed by the user
+		$text = `promptDialog -query -text`;
+		print("HELLO to "+ $text +"\n");
+		$text = `toNativePath($text)`;
+		FBXImport -file $text;
+		
+	}				  
+	else {
+		print("Import canceled \n");
+	}
+}
