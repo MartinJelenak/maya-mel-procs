@@ -1,0 +1,11 @@
+{
+   int $offset = 20;
+   string $sel[] = `ls -sl`;
+   print($sel);
+   int $count = 0;
+   for( $obj in $sel) {
+       select $obj;
+       move -r -os -wd ($offset*$count) 0 0;
+       $count = $count + 1;
+   }
+}
