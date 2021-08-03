@@ -1,0 +1,35 @@
+{    
+    $faces = getDataSelection("f");
+    string $vfList[];
+    for ($face in $faces){  
+        string $vfList[] = `polyListComponentConversion -ff -tvf $face`;
+        $vfList = `ls -flatten $vfList`;
+        for ($vf in $vfList){
+            print($vf);
+            $color =`polyColorPerVertex -q -r -g -b -a $vf`;
+            print($color);
+            polyColorPerVertex -r 1 -g 1 -b 1 -a $color[0] $vf;
+        }
+    }
+    
+    proc string[] getDataSelection(string $type){
+        if($type == "v"){
+            string $sel[] =`ls -sl`;
+            return $sel;
+        }
+        else if($type == "f"){
+            string $sel[] =`ls -sl`;
+            $s = `getFaces`;
+            select -cl;
+            changeSelectMode -object;
+            return $s;
+        }
+        else{
+            string $sel[] =`ls -sl`;
+            return $sel;
+        } 
+    }
+}
+
+
+
